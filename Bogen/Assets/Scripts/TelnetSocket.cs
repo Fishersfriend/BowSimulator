@@ -28,20 +28,28 @@ public class TelnetSocket : MonoBehaviour
     public bool Debugging = false;
 
     public bool isShot = false;
+    public bool conectToBow = false;
 
     public int pull = 0;
 
 
     // Use this for initialization
     void Start () {
-        //OpenConnection();
+
+        if (conectToBow)
+        {
+            OpenConnection();
+        }
         ShotBow("Shot 1500");
     }
 	
 	// Update is called once per frame
 	void Update () {
-         //ReadSocket();
 
+        if (conectToBow)
+        {
+            ReadSocket();
+        }
 
 
         if (Input.GetKeyDown(KeyCode.Q))
@@ -112,10 +120,13 @@ public class TelnetSocket : MonoBehaviour
 
     void OnDestroy()
     {
-        //mySocket.Close();
-        theStream.Dispose();
-        theWriter.Dispose();
-        theReader.Dispose();
+        if (conectToBow)
+        {
+            mySocket.Close();
+            theStream.Dispose();
+            theWriter.Dispose();
+            theReader.Dispose();
+        }
     }
 
     private void PingSomeone()

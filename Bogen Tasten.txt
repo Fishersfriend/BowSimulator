@@ -1,0 +1,15 @@
+Q	Shot Bow 1500
+
+A	enableTotal
+S	disableTotal
+
+Y	setShotDetection; enableShotDetection
+X	disableShotDetection
+
+O	enableIR1 & IR2
+p	disableIR1 & IR2
+
+
+C	Calibrate Simple
+V	Calibrate over time
+B	Activate Calibration Target
