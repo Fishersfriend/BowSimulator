@@ -18,6 +18,7 @@ public class TelnetSocket : MonoBehaviour
 
     public GameObject arrow;
     public GameObject Bow;
+    GameObject newArrow;
 
     int counter = 0;
     public int setShotDetection = 10;
@@ -40,7 +41,7 @@ public class TelnetSocket : MonoBehaviour
         {
             OpenConnection();
         }
-        ShotBow("Shot 1500");
+        //ShotBow("Shot 1500");
     }
 	
 	// Update is called once per frame
@@ -195,17 +196,20 @@ public class TelnetSocket : MonoBehaviour
 
         if (Debugging)
         {
-            Debug.Log(msg);
+
+            Debug.Log(Time.time + " Message: " + msg);
         }
 
-        if (msg.Contains("Color")&& colorOut)
-        {
-            Debug.Log("data: " + msg);
-        }
 
         if (msg.StartsWith("Shot "))
         {
             ShotBow(msg);
+        }
+
+
+        if (msg.Contains("Color")&& colorOut)
+        {
+            Debug.Log("data: " + msg);
         }
 
         if(msg.Contains("Volt") && voltOut)
@@ -230,10 +234,12 @@ public class TelnetSocket : MonoBehaviour
         if (Powerint >= 100)
         {
             isShot = true;
-            Debug.Log("Shotpower: " + Powerint);
+            pull = 0;
+            Debug.Log(Time.frameCount+" Shotpower: " + Powerint);
             Quaternion rotation = Bow.transform.rotation;
             Vector3 direction = rotation * Vector3.forward;
-            Instantiate(arrow, Bow.transform.position-new Vector3(0,0,0), Bow.transform.rotation).GetComponent<Rigidbody>().AddForce(direction * Powerint * Powermultiplikator);
+            newArrow = Instantiate(arrow, Bow.transform.position, Bow.transform.rotation);
+            newArrow.GetComponent<Rigidbody>().AddForce(direction * Powerint * Powermultiplikator);
 
             //Wait(1);
             //Debug.Log(Bow.transform.position);

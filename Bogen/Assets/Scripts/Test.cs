@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ManagerPull : MonoBehaviour {
-
-    [Range(0.0f, 1500.0f)]
-    public float power = 0;
+public class Test : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
@@ -14,6 +11,6 @@ public class ManagerPull : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
+        transform.position = new Vector3(0, Mathf.Sin(Time.time), 0);
 	}
 }
