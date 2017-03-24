@@ -171,14 +171,13 @@ public class TelnetSocket : MonoBehaviour
     bool data = true;
     private void ReadSocket()
     {
-        //Debug.Log(mySocket.Connected);
-
         if (mySocket.Connected)
         {
-
             if (theStream.DataAvailable)
-            {
-                ParseMSG(theReader.ReadLine());
+            {          
+                //Debug.Log(theReader.ReadLine());
+                //ParseMSG(theReader.ReadLine());
+
                 data = true;
             }
             else if (data)
@@ -196,7 +195,6 @@ public class TelnetSocket : MonoBehaviour
 
         if (Debugging)
         {
-
             Debug.Log(Time.time + " Message: " + msg);
         }
 
@@ -234,7 +232,7 @@ public class TelnetSocket : MonoBehaviour
         if (Powerint >= 100)
         {
             isShot = true;
-            pull = 0;
+            
             Debug.Log(Time.frameCount+" Shotpower: " + Powerint);
             Quaternion rotation = Bow.transform.rotation;
             Vector3 direction = rotation * Vector3.forward;
@@ -271,7 +269,8 @@ public class TelnetSocket : MonoBehaviour
             */
             //isShot = false;
         }
-        
+        pull = 0;
+
     }
     IEnumerator Wait(float waitTime)
     {
