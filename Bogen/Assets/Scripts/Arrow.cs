@@ -13,23 +13,14 @@ public class Arrow : MonoBehaviour {
 
     public LayerMask mask;
 
-
-	// Use this for initialization
-	void Start ()
-    {
-
-    }
-
-
     // Update is called once per frame
     void FixedUpdate()
     {
         //positionOld = this.transform.position;
+        //zur Zeit nicht benutzt
 
         if (Physics.Raycast(this.transform.position - 0.5f * this.transform.up, this.transform.up, 10f, mask))
         {
-            //Debug.DrawRay(this.transform.position - 0.5f * this.transform.up, this.transform.up,Color.red, 10f);
-            //Debug.Log("Here");
             positionOld = this.transform.position;
         }
 
@@ -47,28 +38,16 @@ public class Arrow : MonoBehaviour {
     {
         if(other.tag=="Target")
         {
-            //Debug.Log("freeze");
             rb.constraints = RigidbodyConstraints.FreezeAll;
             freeze = true;
-            this.transform.position = this.positionOld + (this.transform.position - this.positionOld) / 2f;
+            //this.transform.position = this.positionOld + (this.transform.position - this.positionOld) / 2f;
             this.transform.parent = other.transform;
         }
 
-        if(other.tag=="Floor")
+        else if(other.tag=="Floor")
         {
             rb.constraints = RigidbodyConstraints.FreezeAll;
             freeze = true;
-        }
-
-        else if(other.tag=="Metal")
-        {
-            normalCollider = arrow.transform.position - other.transform.position;
-            normalCollider= normalCollider.normalized;
-            var x = Vector3.Dot(rb.velocity, normalCollider);
-            rb.velocity = normalCollider * x;
-
-
-            rb.velocity = -rb.velocity;
         }
     }
 }

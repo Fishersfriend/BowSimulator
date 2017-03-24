@@ -26,7 +26,7 @@ public class Calibration : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-
+        //Calibrate
 		if(Input.GetKeyDown(KeyCode.C))
         {
             this.transform.rotation = Quaternion.Euler(0, 0, 0);
@@ -36,9 +36,9 @@ public class Calibration : MonoBehaviour {
             calibrationTarget.GetComponent<MeshRenderer>().enabled = false;
             calibrationTarget.GetComponent<MeshCollider>().enabled = false;
             calibrationTarget.transform.position = new Vector3(0, 0, 0);
-
         }
 
+        //Activate CalibrationTarget
         if (Input.GetKeyDown(KeyCode.V))
         {
             Debug.Log("Calibrating");
@@ -46,19 +46,14 @@ public class Calibration : MonoBehaviour {
             calibrationTarget.transform.position = new Vector3(bow.transform.position.x, bow.transform.position.y, bow.transform.position.z + 3);
             calibrationTarget.GetComponent<MeshRenderer>().enabled = true;
             calibrationTarget.GetComponent<MeshCollider>().enabled = true;
-
         }
 
-
+        //Transform CalibrationTarget
         if (calibrating)
         {
             calibrationTarget.transform.position = new Vector3(bow.transform.position.x, bow.transform.position.y, bow.transform.position.z + 3);
 
             Debug.DrawRay(bow.transform.position, new Vector3(0, 0, +3), Color.red, 0.01f);
         }
-
-
-
     }
-    
 }

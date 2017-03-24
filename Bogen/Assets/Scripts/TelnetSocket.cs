@@ -25,13 +25,14 @@ public class TelnetSocket : MonoBehaviour
     public bool voltOut = true;
     public bool colorOut = true;
     public bool irActive = false;
-    public float Powermultiplikator = 1;
     public bool Debugging = false;
 
     public bool isShot = false;
     public bool conectToBow = false;
+    public bool changeColor = false;
 
     public int pull = 0;
+    public int powerInt;
 
 
     // Use this for initialization
@@ -198,12 +199,10 @@ public class TelnetSocket : MonoBehaviour
             Debug.Log(Time.time + " Message: " + msg);
         }
 
-
         if (msg.StartsWith("Shot "))
         {
             ShotBow(msg);
         }
-
 
         if (msg.Contains("Color")&& colorOut)
         {
@@ -228,46 +227,42 @@ public class TelnetSocket : MonoBehaviour
     {
 
         //Debug.Log(Power);
-        int Powerint = int.Parse(Power.Substring(4));
-        if (Powerint >= 100)
+        powerInt = int.Parse(Power.Substring(4));
+        if (powerInt >= 100)
         {
             isShot = true;
-            
-            Debug.Log(Time.frameCount+" Shotpower: " + Powerint);
-            Quaternion rotation = Bow.transform.rotation;
-            Vector3 direction = rotation * Vector3.forward;
-            newArrow = Instantiate(arrow, Bow.transform.position, Bow.transform.rotation);
-            newArrow.GetComponent<Rigidbody>().AddForce(direction * Powerint * Powermultiplikator);
+            Debug.Log(" Shotpower: " + powerInt);
 
-            //Wait(1);
-            //Debug.Log(Bow.transform.position);
-            /*
-            int y = Random.Range(1, 4);
-            Debug.Log(y);
-            if (y == 1)
+            //Color
+
+
+            if (changeColor)
             {
-                theWriter.WriteLine("shotColor red\n");
-                theWriter.Flush();
-                Debug.Log("Red");
+                int y = Random.Range(1, 4);
+                //Debug.Log(y);
+                if (y == 1)
+                {
+                    theWriter.WriteLine("shotColor red\n");
+                    theWriter.Flush();
+                    Debug.Log("Red");
+                }
+                else if (y == 2)
+                {
+                    theWriter.WriteLine("shotColor green\n");
+                    theWriter.Flush();
+                    Debug.Log("Green");
+                }
+                else if (y == 3)
+                {
+                    theWriter.WriteLine("shotColor blue\n");
+                    theWriter.Flush();
+                    Debug.Log("Blue");
+                }
+                else
+                {
+                    Debug.Log("ErrorColor");
+                }
             }
-            else if (y == 2)
-            {
-                theWriter.WriteLine("shotColor green\n");
-                theWriter.Flush();
-                Debug.Log("Green");
-            }
-            else if (y == 3)
-            {
-                theWriter.WriteLine("shotColor blue\n");
-                theWriter.Flush();
-                Debug.Log("Blue");
-            }
-            else
-            {
-                Debug.Log("ErrorColor");
-            }
-            */
-            //isShot = false;
         }
         pull = 0;
 

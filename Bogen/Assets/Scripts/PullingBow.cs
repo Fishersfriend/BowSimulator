@@ -7,18 +7,18 @@ public class PullingBow : MonoBehaviour
     public GameObject GameManager;
     public GameObject arrow;
     public GameObject bow;
+    Animator anim;
 
     GameObject newArrow;
-    float power;
+
     bool shot;
     bool nocked = false;
-    Vector3 arrowRotation;
 
+    float power;
+    public float powerMulti = 0.1f;
 
     [Range(0.0f, 1500.0f)]
     public float pull = 0;
-
-    Animator anim;
 
 
     // Use this for initialization
@@ -32,39 +32,27 @@ public class PullingBow : MonoBehaviour
     void Update()
     {
         shot = GameManager.GetComponent<TelnetSocket>().isShot;
-        //Debug.Log(GameManager.GetComponent<TelnetSocket>().isShot);
 
         if (!shot)
         {
-
-            pull = GameManager.GetComponent<TelnetSocket>().pull;
-            //Debug.Log(GameManager.GetComponent<TelnetSocket>().pull);
-
+            //pull = GameManager.GetComponent<TelnetSocket>().pull;     <- HERE
             power = pull / 15;
-            //Debug.Log(power);
-            //Debug.Log("Seconds: "+power);
-
             power = power / 100;
-            //Debug.Log(power);
+
             if (power > 0 && power <= 1)
             {
-                //power = Mathf.Round(power * 10f) / 10f;
-                //Debug.Log("Seconds: " + power);
                 if (!nocked && pull > 100)
                 {
                     newArrow = Instantiate(arrow, this.transform.position, this.transform.rotation);
-                    //Debug.Log("New Arrow");
                     newArrow.transform.parent = this.transform;
                     nocked = true;
                 }
                 if (nocked && pull > 100)
                 {
-                    //- 0.485f * power
                     newArrow.transform.localPosition = new Vector3(0, 0, 0 - 0.485f * power);
                     newArrow.transform.rotation = this.transform.rotation;
 
                 }
-
                 anim.Play("Idle", 0, power);
 
             }
@@ -91,6 +79,14 @@ public class PullingBow : MonoBehaviour
                 Destroy(newArrow);
                 nocked = false;
                 //Debug.Log(nocked);
+
+                int powerInt = GameManager.GetComponent<TelnetSocket>().powerInt;
+                Quaternion rotation = this.transform.rotation;
+                Vector3 direction = rotation * Vector3.forward;
+                newArrow = Instantiate(arrow, this.transform.position, this.transform.rotation);
+                newArrow.transform.position = this.transform.position;
+                newArrow.transform.rotation = this.transform.rotation;
+                newArrow.GetComponent<Rigidbody>().AddForce(direction * powerInt * powerMulti);
             }
             StartCoroutine(Wait(1));
         }
