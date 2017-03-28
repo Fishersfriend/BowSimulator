@@ -50,7 +50,7 @@ public class PullingBow : MonoBehaviour
                 }
                 if (nocked && pull > 100)
                 {
-                    newArrow.transform.localPosition = new Vector3(0, 0, 0 + 0.12f * power);
+                    newArrow.transform.localPosition = new Vector3(0, 0, +0.62f -0.5f*power);
                     newArrow.transform.rotation = this.transform.rotation;
 
                 }
