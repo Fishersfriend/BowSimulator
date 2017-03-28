@@ -5,6 +5,8 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody), typeof(Collider))]
 public class Arrow : MonoBehaviour {
 
+    public Transform bloodSplatterPrefab;
+
     private Rigidbody rb;
     private bool frozen = false;
 
@@ -24,6 +26,10 @@ public class Arrow : MonoBehaviour {
         GetComponent<Collider>().enabled = false;
         frozen = true;
         Zombie zombie = other.GetComponentInParent<Zombie>();
-        if (zombie != null) zombie.Hit();
+        if (zombie != null) {
+            Transform blood = Instantiate<Transform>(bloodSplatterPrefab, transform.position, transform.rotation);
+            blood.Rotate(0, 180, 0);
+            zombie.Hit();
+        }
     }
 }

@@ -196,7 +196,7 @@ public class TelnetSocket : MonoBehaviour
 
         if (Debugging)
         {
-            Debug.Log(" Message: " + msg);
+            //Debug.Log(" Message: " + msg);
         }
 
         if (msg.StartsWith("Shot "))

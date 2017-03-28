@@ -31,8 +31,7 @@ public class PullingBow : MonoBehaviour
         anim = GetComponent<Animator>();
     }
 
-
-    // Use this for initialization
+    
     void Start() {
         previewArrow = Instantiate<Arrow>(arrowPrefab, transform.position, transform.rotation, transform);
         previewArrow.enabled = false;
@@ -41,6 +40,9 @@ public class PullingBow : MonoBehaviour
     }
 
     private void FixedUpdate() {
+        pull = telnetSocket.pull;
+  
+
         if (pull > 100) {
             previewArrow.gameObject.SetActive(true);
             previewArrow.transform.localPosition = Vector3.forward * (0.62f - 0.5f * Power);
@@ -49,17 +51,19 @@ public class PullingBow : MonoBehaviour
 
         anim.Play("Idle", 0, Power);
 
-        if (telnetSocket.isShot && pull > 100) {
+        //Debug.Log("Shot: " + shot + ", pull: " + pull);
+
+        if (telnetSocket.isShot) {
             ShootArrow();
             telnetSocket.isShot = false;
         }
 
-        if (pull <= 100) telnetSocket.isShot = false;
+        //if (pull <= 100) telnetSocket.isShot = false;
     }
 
     private void ShootArrow() {
         Arrow newArrow = Instantiate<Arrow>(arrowPrefab, transform.position, transform.rotation);
-        newArrow.GetComponent<Rigidbody>().velocity = transform.forward * powerMulti * Power;
+        newArrow.GetComponent<Rigidbody>().velocity = transform.forward * powerMulti * telnetSocket.powerInt;
     }
 
 }
