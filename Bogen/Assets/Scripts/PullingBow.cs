@@ -35,7 +35,7 @@ public class PullingBow : MonoBehaviour
 
         if (!shot)
         {
-            //pull = GameManager.GetComponent<TelnetSocket>().pull;     <- HERE
+            //pull = GameManager.GetComponent<TelnetSocket>().pull;     //<- HERE
             power = pull / 15;
             power = power / 100;
 
@@ -71,8 +71,6 @@ public class PullingBow : MonoBehaviour
         {
             //Debug.Log("Reset");
             anim.Play("Idle", 0, 0);
-            StartCoroutine(Wait(1));
-
             if (nocked)
             {
                 //Debug.Log("destroy");

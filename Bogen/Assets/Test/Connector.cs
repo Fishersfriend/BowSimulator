@@ -1,4 +1,5 @@
 ﻿
+using UnityEngine;
 using System;
 using System.IO;
 using System.Net.Sockets;
@@ -13,18 +14,19 @@ namespace SharpConnect
         const int PORT_NUM = 23;
         private TcpClient client;
         private byte[] readBuffer = new byte[READ_BUFFER_SIZE];
-        public ArrayList lstUsers = new ArrayList();
         public string strMessage = string.Empty;
-        public string res = String.Empty;
-        private string pUserName;
+        public string msg = string.Empty;
+
+        public byte[] byteBuffer = new byte [255];
+        int offset = 0;
+        int stringPosition = 0;        
 
         public Connector() { }
 
-        public string fnConnectResult(string sNetIP, int iPORT_NUM, string sUserName)
+        public string fnConnectResult(string sNetIP, int iPORT_NUM)
         {
             try
             {
-                pUserName = sUserName;
                 // The TcpClient is a subclass of Socket, providing higher level 
                 // functionality like streaming.
                 client = new TcpClient(sNetIP, PORT_NUM);
@@ -33,7 +35,7 @@ namespace SharpConnect
                 client.GetStream().BeginRead(readBuffer, 0, READ_BUFFER_SIZE, new AsyncCallback(DoRead), null);
                 // Make sure the window is showing before popping up connection dialog.
 
-                AttemptLogin(sUserName);
+                //AttemptLogin(sUserName);
                 return "Connection Succeeded";
             }
             catch (Exception ex)
@@ -41,103 +43,97 @@ namespace SharpConnect
                 return "Server is not active.  Please start server and try again.      " + ex.ToString();
             }
         }
-        public void AttemptLogin(string user)
-        {
-            SendData("CONNECT|" + user);
-        }
-
-        public void fnPacketTest(string sInfo)
-        {
-            SendData("CHAT|" + sInfo);
-        }
 
         public void fnDisconnect()
         {
             SendData("DISCONNECT");
         }
 
-        public void fnListUsers()
-        {
-            SendData("REQUESTUSERS");
-        }
-
         private void DoRead(IAsyncResult ar)
         {
+
+            //Debug.Log("ts");
             int BytesRead;
             try
             {
-                // Finish asynchronous read into readBuffer and return number of bytes read.
+                // Finish asynchronous read into readBuffer and return number of bytes read.                
                 BytesRead = client.GetStream().EndRead(ar);
+
                 if (BytesRead < 1)
                 {
                     // if no bytes were read server has close.  
-                    res = "Disconnected";
+                    msg = "Disconnected";
                     return;
                 }
-                // Convert the byte array the message was saved into, minus two for the
-                // Chr(13) and Chr(10)
-                strMessage = Encoding.ASCII.GetString(readBuffer, 0, BytesRead - 2);
-                ProcessCommands(strMessage);
+
+                strMessage = Encoding.ASCII.GetString(readBuffer, 0, BytesRead);
+
+
+                //schreiben byteBuffer
+                string tempstring= "";
+
+                for (int i = 0; i < BytesRead; i++)
+                {
+                    byteBuffer[i+offset] = readBuffer[i];
+
+                    int ausgabe = i + offset;
+                    Debug.Log("byteBuffer[]: "+ausgabe +"   readBuffer: "+(char)readBuffer[i]+ "   Offset: "+offset);
+                    tempstring +=(char) byteBuffer[i];
+                }
+
+
+                //suche nach /n, offset berechnen
+                stringPosition = 0;
+                for (int i=0; i<255; i++)
+                {
+                    if ((char)byteBuffer[i] == '\n')
+                    {
+                        Debug.Log("Zeichen erkannt");
+                        stringPosition = i+1;
+                        strMessage = Encoding.ASCII.GetString(byteBuffer, 0, stringPosition);
+
+
+                        for (int u=0; u < 255-stringPosition; u++)
+                        {
+                            byteBuffer[u] = byteBuffer[u + stringPosition];
+                        }
+
+                        //ProcessCommands(strMessage);
+
+                        break;
+                    }
+                }
+                offset = offset + BytesRead - stringPosition;       
+
                 // Start a new asynchronous read into readBuffer.
                 client.GetStream().BeginRead(readBuffer, 0, READ_BUFFER_SIZE, new AsyncCallback(DoRead), null);
+                
 
             }
-            catch
+            catch(System.Exception e)
             {
-                res = "Disconnected";
+                Debug.Log(e);
+                msg = "DISCOnnected";
             }
+        }
+
+        private void ProcessCommands(string strMessage)
+        {
+            msg = strMessage;
+            Debug.Log(msg);
+
+
         }
 
         // Process the command received from the server, and take appropriate action.
-        private void ProcessCommands(string strMessage)
-        {
-            string[] dataArray;
-
-            // Message parts are divided by "|"  Break the string into an array accordingly.
-            dataArray = strMessage.Split((char)124);
-            // dataArray(0) is the command.
-            switch (dataArray[0])
-            {
-                case "JOIN":
-                    // Server acknowledged login.
-                    res = "You have joined the chat";
-                    break;
-                case "CHAT":
-                    // Received chat message, display it.
-                    res = dataArray[1].ToString();
-                    break;
-                case "REFUSE":
-                    // Server refused login with this user name, try to log in with another.
-                    AttemptLogin(pUserName);
-                    res = "Attempted Re-Login";
-                    break;
-                case "LISTUSERS":
-                    // Server sent a list of users.
-                    ListUsers(dataArray);
-                    break;
-                case "BROAD":
-                    // Server sent a broadcast message
-                    res = "ServerMessage: " + dataArray[1].ToString();
-                    break;
-            }
-        }
 
         // Use a StreamWriter to send a message to server.
         private void SendData(string data)
         {
             StreamWriter writer = new StreamWriter(client.GetStream());
-            writer.Write(data + (char)13);
+            writer.Write(data + "/n");
             writer.Flush();
         }
 
-        private void ListUsers(string[] users)
-        {
-            int I;
-            lstUsers.Clear();
-            for (I = 1; I <= (users.Length - 1); I++)
-            {
-                lstUsers.Add(users[I]);
-            }
-        }
     }
 }

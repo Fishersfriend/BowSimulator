@@ -8,40 +8,29 @@ public class LinkSyncSCR : MonoBehaviour
 {
     public Connector test = new Connector();
     string lastMessage;
-    public Transform PlayerCoord;
 
     void Start()
     {
-        Debug.Log(test.fnConnectResult("192.168.4.1", 23, System.Environment.MachineName));
-        if (test.res != "")
+        Debug.Log(test.fnConnectResult("192.168.4.1", 23));
+        if (test.msg != "")
         {
-            Debug.Log(test.res);
+            Debug.Log(test.msg);
         }
 
     }
     void Update()
     {
-        if (Input.GetKeyDown("space"))
-        {
-            Debug.Log("space key was pressed");
-            test.fnPacketTest("space key was pressed");
-        }
-
-        if (Input.GetKeyDown("escape"))
-        {
-            Debug.Log("escape key was pressed");
-            test.fnPacketTest("escape key was pressed");
-        }
         if (test.strMessage != "JOIN")
         {
-            if (test.res != lastMessage)
+            if (test.msg != lastMessage)
             {
-                Debug.Log(test.res);
-                lastMessage = test.res;
+                //Debug.Log(test.res);
+                lastMessage = test.msg;
+                HandleMessage(lastMessage);
+
             }
         }
-        //test.fnPacketTest(PlayerCoord.position[0] + "," + PlayerCoord.position[1] + "," + PlayerCoord.position[2]);
-        Debug.Log(test.res);
+        //Debug.Log(test.strMessage);
     }
 
     void OnApplicationQuit()
@@ -49,4 +38,15 @@ public class LinkSyncSCR : MonoBehaviour
         try { test.fnDisconnect(); }
         catch { }
     }
+
+    private void HandleMessage(string msg)
+    {
+        //Debug.Log(msg);
+    }
+
+    public void ShotBow(string Power)
+    {
+
+    }
+
 }

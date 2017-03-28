@@ -177,7 +177,7 @@ public class TelnetSocket : MonoBehaviour
             if (theStream.DataAvailable)
             {          
                 //Debug.Log(theReader.ReadLine());
-                //ParseMSG(theReader.ReadLine());
+                ParseMSG(theReader.ReadLine());
 
                 data = true;
             }
@@ -196,7 +196,7 @@ public class TelnetSocket : MonoBehaviour
 
         if (Debugging)
         {
-            Debug.Log(Time.time + " Message: " + msg);
+            Debug.Log(" Message: " + msg);
         }
 
         if (msg.StartsWith("Shot "))
