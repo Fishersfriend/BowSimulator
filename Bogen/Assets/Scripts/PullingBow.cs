@@ -44,12 +44,13 @@ public class PullingBow : MonoBehaviour
                 if (!nocked && pull > 100)
                 {
                     newArrow = Instantiate(arrow, this.transform.position, this.transform.rotation);
+                    
                     newArrow.transform.parent = this.transform;
                     nocked = true;
                 }
                 if (nocked && pull > 100)
                 {
-                    newArrow.transform.localPosition = new Vector3(0, 0, 0 - 0.485f * power);
+                    newArrow.transform.localPosition = new Vector3(0, 0, 0 + 0.12f * power);
                     newArrow.transform.rotation = this.transform.rotation;
 
                 }
@@ -73,7 +74,7 @@ public class PullingBow : MonoBehaviour
             anim.Play("Idle", 0, 0);
             if (nocked)
             {
-                //Debug.Log("destroy");
+                Debug.Log("destroy");
                 Destroy(newArrow);
                 nocked = false;
                 //Debug.Log(nocked);
