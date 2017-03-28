@@ -1,103 +1,65 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PullingBow : MonoBehaviour
 {
-    public GameObject GameManager;
-    public GameObject arrow;
-    public GameObject bow;
-    Animator anim;
-
-    GameObject newArrow;
+    
+    public TelnetSocket telnetSocket;
+    public Arrow arrowPrefab;
+    private Animator anim;
 
     bool shot;
     bool nocked = false;
-
-    float power;
-    public float powerMulti = 0.1f;
+    
+    public float powerMulti = 1f;
 
     [Range(0.0f, 1500.0f)]
     public float pull = 0;
 
+    private float Power {
+        get {
+            return pull / 1500;
+        }
+    }
+
+    private Arrow previewArrow;
+
+    private void Awake() {
+        anim = GetComponent<Animator>();
+    }
+
 
     // Use this for initialization
-    void Start()
-    {
-        anim = GetComponent<Animator>();
-        TelnetSocket telnetSocket = GameManager.GetComponent<TelnetSocket>();
+    void Start() {
+        previewArrow = Instantiate<Arrow>(arrowPrefab, transform.position, transform.rotation, transform);
+        previewArrow.enabled = false;
+        previewArrow.GetComponent<Rigidbody>().isKinematic = true;
+        previewArrow.GetComponent<Collider>().enabled = false;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        shot = GameManager.GetComponent<TelnetSocket>().isShot;
-
-        if (!shot)
-        {
-            //pull = GameManager.GetComponent<TelnetSocket>().pull;     //<- HERE
-            power = pull / 15;
-            power = power / 100;
-
-            if (power > 0 && power <= 1)
-            {
-                if (!nocked && pull > 100)
-                {
-                    newArrow = Instantiate(arrow, this.transform.position, this.transform.rotation);
-                    
-                    newArrow.transform.parent = this.transform;
-                    nocked = true;
-                }
-                if (nocked && pull > 100)
-                {
-                    newArrow.transform.localPosition = new Vector3(0, 0, +0.62f -0.5f*power);
-                    newArrow.transform.rotation = this.transform.rotation;
-
-                }
-                anim.Play("Idle", 0, power);
-
-            }
-            if (power < 0)
-            {
-                power = 0;
-                anim.Play("Idle", 0, 0);
-            }
-            if (power > 1)
-            {
-                power = 1;
-                anim.Play("Idle", 0, 1);
-            }
+    private void FixedUpdate() {
+        if (pull > 100) {
+            previewArrow.gameObject.SetActive(true);
+            previewArrow.transform.localPosition = Vector3.forward * (0.62f - 0.5f * Power);
         }
-        if (shot)
-        {
-            //Debug.Log("Reset");
-            anim.Play("Idle", 0, 0);
-            if (nocked)
-            {
-                Debug.Log("destroy");
-                Destroy(newArrow);
-                nocked = false;
-                //Debug.Log(nocked);
+        else previewArrow.gameObject.SetActive(false);
 
-                int powerInt = GameManager.GetComponent<TelnetSocket>().powerInt;
-                Quaternion rotation = this.transform.rotation;
-                Vector3 direction = rotation * Vector3.forward;
-                newArrow = Instantiate(arrow, this.transform.position, this.transform.rotation);
-                newArrow.transform.position = this.transform.position;
-                newArrow.transform.rotation = this.transform.rotation;
-                newArrow.GetComponent<Rigidbody>().AddForce(direction * powerInt * powerMulti);
-            }
-            StartCoroutine(Wait(1));
+        anim.Play("Idle", 0, Power);
+
+        if (telnetSocket.isShot && pull > 100) {
+            ShootArrow();
+            telnetSocket.isShot = false;
         }
 
-
+        if (pull <= 100) telnetSocket.isShot = false;
     }
 
-    IEnumerator Wait(int duration)
-    {
-        yield return new WaitForSeconds(duration);
-        GameManager.GetComponent<TelnetSocket>().isShot = false;
-        anim.Play("Idle", 0, 0);
+    private void ShootArrow() {
+        Arrow newArrow = Instantiate<Arrow>(arrowPrefab, transform.position, transform.rotation);
+        newArrow.GetComponent<Rigidbody>().velocity = transform.forward * powerMulti * Power;
     }
 
 }
