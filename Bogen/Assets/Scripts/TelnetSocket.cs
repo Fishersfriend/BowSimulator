@@ -16,6 +16,7 @@ public class TelnetSocket : MonoBehaviour
     public StreamWriter theWriter;
     public StreamReader theReader;
 
+    public Calibration calibration;
     public GameObject arrow;
     public GameObject Bow;
     GameObject newArrow;
@@ -196,29 +197,33 @@ public class TelnetSocket : MonoBehaviour
 
         if (Debugging)
         {
-            //Debug.Log(" Message: " + msg);
+            Debug.Log(" Message: " + msg);
         }
 
         if (msg.StartsWith("Shot "))
         {
             ShotBow(msg);
         }
-
-        if (msg.Contains("Color")&& colorOut)
-        {
-            Debug.Log("data: " + msg);
-        }
-
-        if(msg.Contains("Volt") && voltOut)
-        {
-            Debug.Log("data: " + msg);
-        }
-
-        if(msg.Contains("Total:"))
+        else if(msg.Contains("Total:"))
         {
             pull = int.Parse(msg.Substring(6));
             //Debug.Log(pull);
         }
+        else if(msg.Contains("Calibration"))
+        {
+            calibration.calibrationStart = true;
+        }
+        else if (msg.Contains("Color")&& colorOut)
+        {
+            Debug.Log("data: " + msg);
+        }
+
+        else if(msg.Contains("Volt") && voltOut)
+        {
+            Debug.Log("data: " + msg);
+        }
+
+
 
 
     }

@@ -9,7 +9,8 @@ public class Calibration : MonoBehaviour {
     public GameObject calibrationTarget;
     Quaternion Offset;
     Vector3 OffsetVec;
-    bool calibrating = false;
+    public bool calibrationStart = false;
+    bool target = false;
 
     int counter = 0;
 
@@ -27,29 +28,32 @@ public class Calibration : MonoBehaviour {
 	void Update ()
     {
         //Calibrate
-		if(Input.GetKeyDown(KeyCode.C))
+		if(calibrationStart&&target)
         {
+            Debug.Log("Calibrating");
             this.transform.rotation = Quaternion.Euler(0, 0, 0);
             this.transform.localPosition = new Vector3(0, 0, 0);
 
-            calibrating = false;
+            target = false;
+            calibrationStart = false;
             calibrationTarget.GetComponent<MeshRenderer>().enabled = false;
             calibrationTarget.GetComponent<MeshCollider>().enabled = false;
             calibrationTarget.transform.position = new Vector3(0, 0, 0);
         }
 
         //Activate CalibrationTarget
-        if (Input.GetKeyDown(KeyCode.V))
+        if (calibrationStart && !target)
         {
-            Debug.Log("Calibrating");
-            calibrating = true;
+            Debug.Log("Target");
+            target = true;
             calibrationTarget.transform.position = new Vector3(bow.transform.position.x, bow.transform.position.y, bow.transform.position.z + 3);
             calibrationTarget.GetComponent<MeshRenderer>().enabled = true;
             calibrationTarget.GetComponent<MeshCollider>().enabled = true;
+            calibrationStart = false;
         }
 
         //Transform CalibrationTarget
-        if (calibrating)
+        if (target)
         {
             calibrationTarget.transform.position = new Vector3(bow.transform.position.x, bow.transform.position.y, bow.transform.position.z + 3);
 
