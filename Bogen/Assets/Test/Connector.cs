@@ -17,7 +17,7 @@ namespace SharpConnect
         public string strMessage = string.Empty;
         public string msg = string.Empty;
 
-        public byte[] byteBuffer = new byte [24];
+        public byte[] byteBuffer = new byte [255];
         int offset = 0;
         int stringPosition = 0;        
 
@@ -77,28 +77,28 @@ namespace SharpConnect
                     byteBuffer[i+offset] = readBuffer[i];
 
                     int ausgabe = i + offset;
-                    Debug.Log("byteBuffer[]: "+ausgabe +"   readBuffer: "+(char)readBuffer[i]+ "   Offset: "+offset);
+                    //Debug.Log("byteBuffer[]: "+ausgabe +"   readBuffer: "+(char)readBuffer[i]+ "   Offset: "+offset);
                     tempstring +=(char) byteBuffer[i];
                 }
 
 
                 //suche nach /n, offset berechnen
                 stringPosition = 0;
-                for (int i=0; i<24; i++)
+                for (int i=0; i<255; i++)
                 {
                     if ((char)byteBuffer[i] == '\n')
                     {
-                        Debug.Log("Zeichen erkannt");
+                        //Debug.Log("Zeichen erkannt");
                         stringPosition = i+1;
                         strMessage = Encoding.ASCII.GetString(byteBuffer, 0, stringPosition);
 
 
-                        for (int u=0; u < 24-stringPosition; u++)
+                        for (int u=0; u < 255-stringPosition; u++)
                         {
                             byteBuffer[u] = byteBuffer[u + stringPosition];
                         }
 
-                        //ProcessCommands(strMessage);
+                        ProcessCommands(strMessage);
 
                         break;
                     }

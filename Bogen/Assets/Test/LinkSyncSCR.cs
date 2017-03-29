@@ -20,15 +20,14 @@ public class LinkSyncSCR : MonoBehaviour
     }
     void Update()
     {
-        if (test.strMessage != "JOIN")
-        {
-            if (test.msg != lastMessage)
-            {
-                //Debug.Log(test.res);
-                lastMessage = test.msg;
-                HandleMessage(lastMessage);
 
-            }
+
+        if (test.msg != lastMessage)
+        {
+            //Debug.Log(test.res);
+            lastMessage = test.msg;
+            HandleMessage(lastMessage);
+
         }
         //Debug.Log(test.strMessage);
     }
