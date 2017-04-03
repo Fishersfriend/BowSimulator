@@ -34,6 +34,8 @@ public class TelnetSocket : MonoBehaviour
 
     public int pull = 0;
     public int powerInt;
+    bool waitforshot = false;
+    bool pullCorrect = true;
 
 
     // Use this for initialization
@@ -54,7 +56,7 @@ public class TelnetSocket : MonoBehaviour
             ReadSocket();
         }
 
-
+        //ShotBow("Shot 1500");
         if (Input.GetKeyDown(KeyCode.Q))
         {
             ShotBow("Shot 1500");
@@ -117,6 +119,13 @@ public class TelnetSocket : MonoBehaviour
             theWriter.Flush();
             Debug.Log("IR 2 inaktiv");
             irActive = false;
+        }
+
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            Debug.Log("Flush");
+            theWriter.WriteLine("clear /n");
+            theWriter.Flush();
         }
     }
 
@@ -200,11 +209,12 @@ public class TelnetSocket : MonoBehaviour
             Debug.Log(" Message: " + msg);
         }
 
-        if (msg.StartsWith("Shot "))
+        if (msg.StartsWith("Shot ") && waitforshot==false)
         {
+            //Debug.Log("shot");
             ShotBow(msg);
         }
-        else if(msg.Contains("Total:"))
+        else if(msg.Contains("Total:") && pullCorrect)
         {
             pull = int.Parse(msg.Substring(6));
             //Debug.Log(pull);
@@ -230,50 +240,77 @@ public class TelnetSocket : MonoBehaviour
 
     private void ShotBow(string Power)
     {
-
+        waitforshot = true;
+        //Debug.Log(waitforshot);
+        StartCoroutine(WaitforShotPause(1));
         //Debug.Log(Power);
         powerInt = int.Parse(Power.Substring(4));
+
+        
         if (powerInt >= 100)
         {
             isShot = true;
+            pullCorrect = false;
+            pull = 0;
+
             Debug.Log(" Shotpower: " + powerInt);
 
-            //Color
 
-
-            if (changeColor)
+            int y = Random.Range(1, 4);
+            //Debug.Log(y);
+            if (y == 1)
             {
-                int y = Random.Range(1, 4);
-                //Debug.Log(y);
-                if (y == 1)
-                {
-                    theWriter.WriteLine("shotColor red\n");
-                    theWriter.Flush();
-                    Debug.Log("Red");
-                }
-                else if (y == 2)
-                {
-                    theWriter.WriteLine("shotColor green\n");
-                    theWriter.Flush();
-                    Debug.Log("Green");
-                }
-                else if (y == 3)
-                {
-                    theWriter.WriteLine("shotColor blue\n");
-                    theWriter.Flush();
-                    Debug.Log("Blue");
-                }
-                else
-                {
-                    Debug.Log("ErrorColor");
-                }
+                theWriter.WriteLine("shotRed: "+powerInt + "/n");
+                theWriter.Flush();
+                Debug.Log("RedShot");
+                StartCoroutine(Wait(0.01f));
+                theWriter.WriteLine("clear /n");
+                theWriter.Flush();
             }
-        }
-        pull = 0;
+            else if (y == 2)
+            {
+                theWriter.WriteLine("shotBlue: " + powerInt + "/n");
+                theWriter.Flush();
+                Debug.Log("BlueShot");
 
+            }
+            else if (y == 3)
+            {
+                theWriter.WriteLine("shotGreen: " + powerInt + "/n");
+                theWriter.Flush();
+                Debug.Log("GreenShot");
+
+            }
+            else
+            {
+                Debug.Log("ErrorColor");
+            }
+            StartCoroutine(WaitforFlush(0.75f));
+
+        }
+        
     }
     IEnumerator Wait(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
     }
+    IEnumerator WaitforShotPause(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        waitforshot = false;
+        //Debug.Log(waitforshot);
+    }
+    IEnumerator WaitforFlush(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        theWriter.WriteLine("clear/n");
+        theWriter.Flush();
+        Debug.Log("Flush");
+
+        yield return new WaitForSeconds(0.01f);
+        pullCorrect = true;
+
+    }
+
+
 }
