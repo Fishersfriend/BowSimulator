@@ -24,13 +24,10 @@ public class TelnetSocket : MonoBehaviour
     int counter = 0;
     public int setShotDetection = 10;
     public bool voltOut = true;
-    public bool colorOut = true;
-    public bool irActive = false;
     public bool Debugging = false;
 
     public bool isShot = false;
     public bool conectToBow = false;
-    public bool changeColor = false;
 
     public int pull = 0;
     public int powerInt;
@@ -43,9 +40,8 @@ public class TelnetSocket : MonoBehaviour
 
         if (conectToBow)
         {
-            OpenConnection();
+            StartCoroutine(activateBow());
         }
-        //ShotBow("Shot 1500");
     }
 	
 	// Update is called once per frame
@@ -62,41 +58,6 @@ public class TelnetSocket : MonoBehaviour
             ShotBow("Shot 1500");
         }
 
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            theWriter.WriteLine("enableTotal\n");
-            theWriter.Flush();
-            Debug.Log("enableTotal");
-        }
-
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            theWriter.WriteLine("disableTotal\n");
-            theWriter.Flush();
-            Debug.Log("disableTotal");
-        }
-
-        if (Input.GetKeyDown(KeyCode.Y))
-        {
-            string setShotDetectionString = "setShotDetection " + setShotDetection.ToString() + "\n";
-            theWriter.WriteLine(setShotDetectionString);
-            theWriter.Flush();
-            Wait(1);
-            theWriter.WriteLine("enableShotDetection\n");
-            theWriter.Flush();
-            Debug.Log("enableShot");
-        }
-
-        if (Input.GetKeyDown(KeyCode.X))
-        {
-
-            theWriter.WriteLine("disableShotDetection\n");
-            theWriter.Flush();
-            Debug.Log("disableShot");
-        }
-
-
-
         if(Input.GetKeyDown(KeyCode.O))
         {
             theWriter.WriteLine("enableIR1\n");
@@ -106,7 +67,6 @@ public class TelnetSocket : MonoBehaviour
             theWriter.WriteLine("enableIR2\n");
             theWriter.Flush();
             Debug.Log("IR 2 aktiv");
-            irActive = true;
         }
 
         if(Input.GetKeyDown(KeyCode.P))
@@ -118,14 +78,6 @@ public class TelnetSocket : MonoBehaviour
             theWriter.WriteLine("disableIR2\n");
             theWriter.Flush();
             Debug.Log("IR 2 inaktiv");
-            irActive = false;
-        }
-
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            Debug.Log("Flush");
-            theWriter.WriteLine("clear /n");
-            theWriter.Flush();
         }
     }
 
@@ -134,10 +86,7 @@ public class TelnetSocket : MonoBehaviour
     {
         if (conectToBow)
         {
-            mySocket.Close();
-            theStream.Dispose();
-            theWriter.Dispose();
-            theReader.Dispose();
+            StartCoroutine(deactivateBow());
         }
     }
 
@@ -223,10 +172,6 @@ public class TelnetSocket : MonoBehaviour
         {
             calibration.calibrationStart = true;
         }
-        else if (msg.Contains("Color")&& colorOut)
-        {
-            Debug.Log("data: " + msg);
-        }
 
         else if(msg.Contains("Volt") && voltOut)
         {
@@ -287,9 +232,49 @@ public class TelnetSocket : MonoBehaviour
             }
             StartCoroutine(WaitforFlush(0.75f));
 
-        }
-        
+        }    
     }
+
+    IEnumerator activateBow()
+    {
+        OpenConnection();
+
+        yield return new WaitForSeconds(0.05f);
+        theWriter.WriteLine("enableTotal\n");
+        theWriter.Flush();
+        Debug.Log("enableTotal");
+
+        yield return new WaitForSeconds(0.01f);
+        string setShotDetectionString = "setShotDetection " + setShotDetection.ToString() + "\n";
+        theWriter.WriteLine(setShotDetectionString);
+        theWriter.Flush();
+
+        yield return new WaitForSeconds(0.01f);
+        theWriter.WriteLine("enableShotDetection\n");
+        theWriter.Flush();
+        Debug.Log("enableShot");
+
+
+    }
+
+    IEnumerator deactivateBow()
+    {
+        yield return new WaitForSeconds(0.01f);
+        theWriter.WriteLine("disableTotal\n");
+        theWriter.Flush();
+        Debug.Log("disableTotal");
+
+        yield return new WaitForSeconds(0.01f);
+        theWriter.WriteLine("disableShotDetection\n");
+        theWriter.Flush();
+        Debug.Log("disableShot");
+
+        mySocket.Close();
+        theStream.Dispose();
+        theWriter.Dispose();
+        theReader.Dispose();
+    }
+
     IEnumerator Wait(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);
