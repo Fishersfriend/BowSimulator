@@ -21,8 +21,10 @@ public class Bow : MonoBehaviour {
     public float pull = 0;
 
     private float Power {
-        get {
-            return pull / 1500;
+        get
+        {
+
+                return pull/1500;
         }
     }
     
@@ -51,10 +53,10 @@ public class Bow : MonoBehaviour {
         anim.Play("Idle", 0, Power);
     }
 
-    public void Shoot() {
+    public void Shoot(int power) {//MEINE POWER NICHT DEINE !!!!
         if (!nocked) return;
         Arrow newArrow = Instantiate<Arrow>(arrowPrefab, previewArrow.transform.position, transform.rotation);
-        newArrow.GetComponent<Rigidbody>().velocity = transform.forward * powerMulti * Power;
+        newArrow.GetComponent<Rigidbody>().velocity = transform.forward * powerMulti * power;
         StartCoroutine(Reload());
     }
 

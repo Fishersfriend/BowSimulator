@@ -21,7 +21,7 @@ public class BowDebugController : MonoBehaviour {
             pulling = true;
         }
         else if (Input.GetMouseButtonUp(0) && pulling) {
-            bow.Shoot();
+            bow.Shoot((int) bow.pull);
             pulling = false;
         }
         else bow.pull *= .6f;

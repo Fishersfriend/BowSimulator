@@ -16,7 +16,6 @@ public class Calibration : MonoBehaviour {
 
     bool timer = false;
 
-    public Vector3[] calibrationValue;
     Quaternion MeanOffset;
 
 

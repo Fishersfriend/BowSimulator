@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour {
 
+    public GameObject[] level;
+    int currentLevel = 0;
+    public bool gameActive = false;
+
     public Zombie zombiePrefab;
     public Fence fence;
     public Player player;
@@ -25,6 +29,12 @@ public class GameManager : MonoBehaviour {
 
     private bool gameOver = false;
 
+
+    void Start()
+    {
+        NextLevel(0);
+
+    }
     private void Awake() {
         zombiesToKill = new List<Zombie>();
         zombies = new List<Zombie>();
@@ -32,19 +42,23 @@ public class GameManager : MonoBehaviour {
 
     private void LateUpdate() {
         ui.Health = player.health;
+        if (gameActive == true)
+        {
+            for (int i = zombiesToKill.Count - 1; i >= 0; i--)
+            {
+                Zombie zombie = zombiesToKill[i];
+                if (!zombie.Alive) zombiesToKill.Remove(zombie);
+            }
 
-        for (int i = zombiesToKill.Count - 1; i >= 0; i--) {
-            Zombie zombie = zombiesToKill[i];
-            if (!zombie.Alive) zombiesToKill.Remove(zombie);
+            if (!spawning && !gameOver && zombiesToKill.Count <= 0)
+            {
+                waveId++;
+                if (waveId < waves.Length) StartCoroutine(SpawnWave(waves[waveId]));
+                else GameOver("You won! Congratulations! :]");
+            }
+
+            if (player.health <= 0 && !gameOver) GameOver("You're dead. :[");
         }
-
-        if (!spawning && !gameOver && zombiesToKill.Count <= 0) {
-            waveId++;
-            if (waveId < waves.Length) StartCoroutine(SpawnWave(waves[waveId]));
-            else GameOver("You won! Congratulations! :]");
-        }
-
-        if (player.health <= 0 && !gameOver) GameOver("You're dead. :[");
 
     }
 
@@ -82,6 +96,21 @@ public class GameManager : MonoBehaviour {
         newZombie.targets.Add(player);
         zombies.Add(newZombie);
         return newZombie;
+    }
+
+    public void NextLevel(int levelCounter)
+    {
+        for (int i = 0; i < level.Length; i++)
+        {
+            if (i == levelCounter)
+            {
+                level[i].SetActive(true);
+            }
+            else
+            {
+                level[i].SetActive(false);
+            }
+        }
     }
 
     private void GameOver(string msg) {

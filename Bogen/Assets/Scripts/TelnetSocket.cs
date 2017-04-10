@@ -16,21 +16,15 @@ public class TelnetSocket : MonoBehaviour
     public StreamWriter theWriter;
     public StreamReader theReader;
 
-    public Calibration calibration;
-    public GameObject arrow;
-    public GameObject Bow;
-    GameObject newArrow;
+    public Calibration bowCalibration;
+    public Bow bow;
 
     int counter = 0;
     public int setShotDetection = 10;
     public bool voltOut = true;
-    public bool colorOut = true;
-    public bool irActive = false;
     public bool Debugging = false;
 
-    public bool isShot = false;
     public bool conectToBow = false;
-    public bool changeColor = false;
 
     public int pull = 0;
     public int powerInt;
@@ -39,17 +33,18 @@ public class TelnetSocket : MonoBehaviour
 
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
 
         if (conectToBow)
         {
-            OpenConnection();
+            StartCoroutine(activateBow());
         }
-        //ShotBow("Shot 1500");
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update()
+    {
 
         if (conectToBow)
         {
@@ -62,42 +57,7 @@ public class TelnetSocket : MonoBehaviour
             ShotBow("Shot 1500");
         }
 
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            theWriter.WriteLine("enableTotal\n");
-            theWriter.Flush();
-            Debug.Log("enableTotal");
-        }
-
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            theWriter.WriteLine("disableTotal\n");
-            theWriter.Flush();
-            Debug.Log("disableTotal");
-        }
-
-        if (Input.GetKeyDown(KeyCode.Y))
-        {
-            string setShotDetectionString = "setShotDetection " + setShotDetection.ToString() + "\n";
-            theWriter.WriteLine(setShotDetectionString);
-            theWriter.Flush();
-            Wait(1);
-            theWriter.WriteLine("enableShotDetection\n");
-            theWriter.Flush();
-            Debug.Log("enableShot");
-        }
-
-        if (Input.GetKeyDown(KeyCode.X))
-        {
-
-            theWriter.WriteLine("disableShotDetection\n");
-            theWriter.Flush();
-            Debug.Log("disableShot");
-        }
-
-
-
-        if(Input.GetKeyDown(KeyCode.O))
+        if (Input.GetKeyDown(KeyCode.O))
         {
             theWriter.WriteLine("enableIR1\n");
             theWriter.Flush();
@@ -106,10 +66,9 @@ public class TelnetSocket : MonoBehaviour
             theWriter.WriteLine("enableIR2\n");
             theWriter.Flush();
             Debug.Log("IR 2 aktiv");
-            irActive = true;
         }
 
-        if(Input.GetKeyDown(KeyCode.P))
+        if (Input.GetKeyDown(KeyCode.P))
         {
             theWriter.WriteLine("disableIR1\n");
             theWriter.Flush();
@@ -118,14 +77,6 @@ public class TelnetSocket : MonoBehaviour
             theWriter.WriteLine("disableIR2\n");
             theWriter.Flush();
             Debug.Log("IR 2 inaktiv");
-            irActive = false;
-        }
-
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            Debug.Log("Flush");
-            theWriter.WriteLine("clear /n");
-            theWriter.Flush();
         }
     }
 
@@ -134,6 +85,14 @@ public class TelnetSocket : MonoBehaviour
     {
         if (conectToBow)
         {
+            theWriter.WriteLine("disableTotal\n");
+            theWriter.Flush();
+            Debug.Log("disableTotal");
+
+            theWriter.WriteLine("disableShotDetection\n");
+            theWriter.Flush();
+            Debug.Log("disableShot");
+
             mySocket.Close();
             theStream.Dispose();
             theWriter.Dispose();
@@ -160,7 +119,7 @@ public class TelnetSocket : MonoBehaviour
         try
         {
             mySocket = new TcpClient(IP, Port);
-            theStream = mySocket.GetStream();    
+            theStream = mySocket.GetStream();
             theWriter = new StreamWriter(theStream);
             theReader = new StreamReader(theStream);
             /*
@@ -185,7 +144,7 @@ public class TelnetSocket : MonoBehaviour
         if (mySocket.Connected)
         {
             if (theStream.DataAvailable)
-            {          
+            {
                 //Debug.Log(theReader.ReadLine());
                 ParseMSG(theReader.ReadLine());
 
@@ -209,26 +168,33 @@ public class TelnetSocket : MonoBehaviour
             Debug.Log(" Message: " + msg);
         }
 
-        if (msg.StartsWith("Shot ") && waitforshot==false)
+        if (msg.StartsWith("Shot ") && waitforshot == false)
         {
             //Debug.Log("shot");
             ShotBow(msg);
         }
-        else if(msg.Contains("Total:") && pullCorrect)
+        else if (msg.Contains("Total:") && pullCorrect)
         {
             pull = int.Parse(msg.Substring(6));
+            if(pull<0)
+            {
+                pull = 0;
+            }
+            if(pull > 1500)
+            {
+                pull = 1500;
+            }
+
+            bow.pull = pull;
+
             //Debug.Log(pull);
         }
-        else if(msg.Contains("Calibration"))
+        else if (msg.Contains("Calibration"))
         {
-            calibration.calibrationStart = true;
-        }
-        else if (msg.Contains("Color")&& colorOut)
-        {
-            Debug.Log("data: " + msg);
+            bowCalibration.calibrationStart = true;
         }
 
-        else if(msg.Contains("Volt") && voltOut)
+        else if (msg.Contains("Volt") && voltOut)
         {
             Debug.Log("data: " + msg);
         }
@@ -246,12 +212,13 @@ public class TelnetSocket : MonoBehaviour
         //Debug.Log(Power);
         powerInt = int.Parse(Power.Substring(4));
 
-        
+
         if (powerInt >= 100)
         {
-            isShot = true;
+            bow.Shoot(powerInt);
             pullCorrect = false;
             pull = 0;
+            bow.pull = pull;
 
             Debug.Log(" Shotpower: " + powerInt);
 
@@ -260,7 +227,7 @@ public class TelnetSocket : MonoBehaviour
             //Debug.Log(y);
             if (y == 1)
             {
-                theWriter.WriteLine("shotRed: "+powerInt + "/n");
+                theWriter.WriteLine("shotRed: " + powerInt + "/n");
                 theWriter.Flush();
                 Debug.Log("RedShot");
                 StartCoroutine(Wait(0.01f));
@@ -288,8 +255,48 @@ public class TelnetSocket : MonoBehaviour
             StartCoroutine(WaitforFlush(0.75f));
 
         }
-        
     }
+
+    IEnumerator activateBow()
+    {
+        OpenConnection();
+
+        yield return new WaitForSeconds(0.05f);
+        theWriter.WriteLine("enableTotal\n");
+        theWriter.Flush();
+        Debug.Log("enableTotal");
+
+        yield return new WaitForSeconds(0.01f);
+        string setShotDetectionString = "setShotDetection " + setShotDetection.ToString() + "\n";
+        theWriter.WriteLine(setShotDetectionString);
+        theWriter.Flush();
+
+        yield return new WaitForSeconds(0.01f);
+        theWriter.WriteLine("enableShotDetection\n");
+        theWriter.Flush();
+        Debug.Log("enableShot");
+
+
+    }
+
+    IEnumerator deactivateBow()
+    {
+        yield return new WaitForSeconds(0.01f);
+        theWriter.WriteLine("disableTotal\n");
+        theWriter.Flush();
+        Debug.Log("disableTotal");
+
+        yield return new WaitForSeconds(0.01f);
+        theWriter.WriteLine("disableShotDetection\n");
+        theWriter.Flush();
+        Debug.Log("disableShot");
+
+        mySocket.Close();
+        theStream.Dispose();
+        theWriter.Dispose();
+        theReader.Dispose();
+    }
+
     IEnumerator Wait(float waitTime)
     {
         yield return new WaitForSeconds(waitTime);

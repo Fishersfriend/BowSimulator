@@ -53,10 +53,11 @@ public class PullingBow : MonoBehaviour
 
         //Debug.Log("Shot: " + shot + ", pull: " + pull);
 
+        /*
         if (telnetSocket.isShot) {
             ShootArrow();
             telnetSocket.isShot = false;
-        }
+        }*/
 
         //if (pull <= 100) telnetSocket.isShot = false;
     }
