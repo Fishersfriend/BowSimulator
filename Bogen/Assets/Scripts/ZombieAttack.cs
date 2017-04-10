@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class StartTraining : MonoBehaviour {
+public class ZombieAttack : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
