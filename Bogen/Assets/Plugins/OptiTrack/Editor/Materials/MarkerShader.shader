@@ -1,4 +1,6 @@
-﻿Shader "Hidden/OptiTrack/Editor/MarkerShader"
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+Shader "Hidden/OptiTrack/Editor/MarkerShader"
 {
     Properties
     {
@@ -44,7 +46,7 @@
             {
                 VertexOut Out;
                 Out.color = _Color;
-                Out.position = mul( UNITY_MATRIX_MVP, float4(In.position.xyz, 1.0) );
+                Out.position = UnityObjectToClipPos( float4(In.position.xyz, 1.0) );
                 return Out;
             }
 
@@ -82,7 +84,7 @@
             {
                 VertexOut Out;
                 Out.color = _Color;
-                Out.position = mul( UNITY_MATRIX_MVP, float4(In.position.xyz, 1.0) );
+                Out.position = UnityObjectToClipPos( float4(In.position.xyz, 1.0) );
                 return Out;
             }
 

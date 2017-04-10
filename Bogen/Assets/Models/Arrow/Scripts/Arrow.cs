@@ -25,11 +25,11 @@ public class Arrow : MonoBehaviour {
         transform.parent = other.transform;
         GetComponent<Collider>().enabled = false;
         frozen = true;
-        Zombie zombie = other.GetComponentInParent<Zombie>();
-        if (zombie != null) {
+        Hitable hitable = other.GetComponentInParent<Hitable>();
+        if (hitable != null) {
             Transform blood = Instantiate<Transform>(bloodSplatterPrefab, transform.position, transform.rotation);
             blood.Rotate(0, 180, 0);
-            zombie.Hit();
+            if(hitable.Alive) hitable.Hit();
         }
     }
 }
