@@ -17,14 +17,20 @@ public class TelnetSocket : MonoBehaviour
     public StreamReader theReader;
 
     public Calibration bowCalibration;
-    public Bow bow;
+    public GameObject Bow;
+    public GameObject Player;
+    public GameObject ClientOptitrack;
+    public GameObject FPSController;
+    public Bow longbow;
+    public 
 
     int counter = 0;
     public int setShotDetection = 10;
     public bool voltOut = true;
     public bool Debugging = false;
 
-    public bool conectToBow = false;
+    public bool connectToBow = false;
+    public bool connectToOptitrack = false;
 
     public int pull = 0;
     public int powerInt;
@@ -36,9 +42,38 @@ public class TelnetSocket : MonoBehaviour
     void Start()
     {
 
-        if (conectToBow)
+        if (connectToBow)
         {
             StartCoroutine(activateBow());
+            longbow.GetComponent<BowDebugController>().enabled = false;
+        }
+        else
+        {
+            longbow.GetComponent<BowDebugController>().enabled = true;
+        }
+
+        if(connectToOptitrack)
+        {
+            ClientOptitrack.SetActive(true);
+            Bow.GetComponent<OptitrackRigidBody>().enabled = true;
+            Player.GetComponent<OptitrackHmd>().enabled = true;
+            FPSController.SetActive(false);
+        }
+        else
+        {
+            ClientOptitrack.SetActive(false);
+            Bow.GetComponent<OptitrackRigidBody>().enabled = false;
+            Player.GetComponent<OptitrackHmd>().enabled = false;
+            FPSController.SetActive(true);
+
+            Player.transform.parent = FPSController.transform;
+            Player.transform.position = new Vector3(0, 1.7f, 0); 
+
+            Bow.transform.parent = Player.transform.GetChild(0).transform.GetChild(0).transform;
+            Bow.transform.position = new Vector3(0,1.7f,0);
+            Bow.transform.GetChild(0).transform.position = new Vector3(0.15f, 1.6f, 0.5f);
+            Bow.GetComponent<RotateWithCamera>().enabled = true;
+
         }
     }
 
@@ -46,7 +81,7 @@ public class TelnetSocket : MonoBehaviour
     void Update()
     {
 
-        if (conectToBow)
+        if (connectToBow)
         {
             ReadSocket();
         }
@@ -83,7 +118,7 @@ public class TelnetSocket : MonoBehaviour
 
     void OnDestroy()
     {
-        if (conectToBow)
+        if (connectToBow)
         {
             theWriter.WriteLine("disableTotal\n");
             theWriter.Flush();
@@ -185,7 +220,7 @@ public class TelnetSocket : MonoBehaviour
                 pull = 1500;
             }
 
-            bow.pull = pull;
+            longbow.pull = pull;
 
             //Debug.Log(pull);
         }
@@ -215,10 +250,10 @@ public class TelnetSocket : MonoBehaviour
 
         if (powerInt >= 100)
         {
-            bow.Shoot(powerInt);
+            longbow.Shoot(powerInt);
             pullCorrect = false;
             pull = 0;
-            bow.pull = pull;
+            longbow.pull = pull;
 
             Debug.Log(" Shotpower: " + powerInt);
 
