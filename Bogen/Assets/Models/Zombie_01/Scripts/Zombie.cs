@@ -8,7 +8,7 @@ public class Zombie : Hitable {
 
     public List<Hitable> targets;
     public Transform rightEye, leftEye;
-
+    GameObject gamemanager;
     public float speedMultiplier;
 
     private float speed;
@@ -35,6 +35,7 @@ public class Zombie : Hitable {
     private void Awake() {
         anim = GetComponent<Animator>();
         anim.SetInteger("Health", health);
+        gamemanager = GameObject.Find("GameManager");
     }
 
     private void Update() {
@@ -86,12 +87,16 @@ public class Zombie : Hitable {
 
     public override void Hit() {
         if (!vulnerable || !Alive) return;
-
         Health--;
         anim.SetTrigger("Hit");
+        HitZombie();
         if (Health <= 0) {
             if (Random.Range(0f, 1f) < .05f) StartCoroutine(Revive(5));
-            else Alive = false;
+            else
+            {
+                Alive = false;
+                KillZombie();
+            }
         }
     }
 
@@ -112,5 +117,15 @@ public class Zombie : Hitable {
         dir.y = 0;
         return dir.magnitude <= attackRange;
     }
-	
+
+    private void HitZombie()
+    {
+        gamemanager.GetComponent<GameManager>().zombieHit++;
+
+    }
+    private void KillZombie()
+    {
+        gamemanager.GetComponent<GameManager>().zombieKill++;
+    }
+
 }

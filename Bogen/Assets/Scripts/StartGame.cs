@@ -18,7 +18,7 @@ public class StartGame : MonoBehaviour {
 
     private void OnTriggerEnter(Collider other)
     {
-        StartCoroutine(Wait(0.5f));
+        StartCoroutine(Wait(0f));
 
     }
 
@@ -28,5 +28,6 @@ public class StartGame : MonoBehaviour {
         Debug.Log("StartGame");
         gamemanager.NextLevel(1);
         gamemanager.gameActive = true;
+        gamemanager.StartTimer();
     }
 }

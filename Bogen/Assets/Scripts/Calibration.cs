@@ -12,8 +12,6 @@ public class Calibration : MonoBehaviour {
     public bool calibrationStart = false;
     bool target = false;
 
-    int counter = 0;
-
     bool timer = false;
 
     Quaternion MeanOffset;

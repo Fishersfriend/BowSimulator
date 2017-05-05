@@ -20,6 +20,8 @@ public class Bow : MonoBehaviour {
     [Range(0.0f, 1500.0f)]
     public float pull = 0;
 
+    public int arrowsShot = 0;
+
     private float Power {
         get
         {
@@ -57,6 +59,8 @@ public class Bow : MonoBehaviour {
         if (!nocked) return;
         Arrow newArrow = Instantiate<Arrow>(arrowPrefab, previewArrow.transform.position, transform.rotation);
         newArrow.GetComponent<Rigidbody>().velocity = transform.forward * powerMulti * power;
+        arrowsShot++;
+        Debug.Log("Shot");
         StartCoroutine(Reload());
     }
 

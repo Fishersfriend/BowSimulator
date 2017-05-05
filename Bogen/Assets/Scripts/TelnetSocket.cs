@@ -71,7 +71,7 @@ public class TelnetSocket : MonoBehaviour
 
             Bow.transform.parent = Player.transform.GetChild(0).transform.GetChild(0).transform;
             Bow.transform.position = new Vector3(0,1.7f,0);
-            Bow.transform.GetChild(0).transform.position = new Vector3(0.15f, 1.6f, 0.5f);
+            Bow.transform.GetChild(0).transform.position = new Vector3(0.1f, 1.65f, 0.75f);
             Bow.GetComponent<RotateWithCamera>().enabled = true;
 
         }
@@ -226,7 +226,15 @@ public class TelnetSocket : MonoBehaviour
         }
         else if (msg.Contains("Calibration"))
         {
-            bowCalibration.calibrationStart = true;
+            if (this.GetComponent<GameManager>().gameOver == false)
+            {
+                bowCalibration.calibrationStart = true;
+            }
+            else
+            {
+                this.GetComponent<GameManager>().gameOver = false;
+                this.GetComponent<GameManager>().ReloudScene();
+            }
         }
 
         else if (msg.Contains("Volt") && voltOut)

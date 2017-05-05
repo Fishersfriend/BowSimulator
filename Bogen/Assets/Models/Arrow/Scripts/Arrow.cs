@@ -29,7 +29,11 @@ public class Arrow : MonoBehaviour {
         if (hitable != null) {
             Transform blood = Instantiate<Transform>(bloodSplatterPrefab, transform.position, transform.rotation);
             blood.Rotate(0, 180, 0);
-            if(hitable.Alive) hitable.Hit();
+
+            if (hitable.Alive)
+            {
+                hitable.Hit();
+            }
         }
     }
 }
