@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -41,8 +42,9 @@ public class GameManager : MonoBehaviour
     public int zombieHit;
     public int zombieKill;
     private int offsetArrowShot = 0;
-
     int highscoreCounter = 11;
+
+    public GameObject HighscoreBoard; 
 
     private int[] highscore;
 
@@ -50,6 +52,7 @@ public class GameManager : MonoBehaviour
     {
         NextLevel(0);
         highscore = new int[11];
+        HighscoreBoard.SetActive(false);
     }
 
     private void Awake()
@@ -76,14 +79,15 @@ public class GameManager : MonoBehaviour
                 else Win("You won! Congratulations!");
             }
 
-            if (player.health <= 0 && !gameOver) GameOver("You're dead. :[ and your BRraAin Too");
+            if (player.health <= 0 && !gameOver) GameOver("You're dead. :[");
         }
 
         arrowsShot = bow.arrowsShot - offsetArrowShot;
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            ReloudScene();
+            GameOver("You're dead. :[");
+            //ReloudScene();
         }
 
         if (Input.GetKeyDown(KeyCode.H))
@@ -98,6 +102,18 @@ public class GameManager : MonoBehaviour
             PlayerPrefs.SetInt(("highscore_7"), 0);
             PlayerPrefs.SetInt(("highscore_8"), 0);
             PlayerPrefs.SetInt(("highscore_9"), 0);
+
+            Debug.Log(
+    "Highscore_0 : " + PlayerPrefs.GetInt("highscore_0") + "\n" +
+    "Highscore_1 : " + PlayerPrefs.GetInt("highscore_1") + "\n" +
+    "Highscore_2 : " + PlayerPrefs.GetInt("highscore_2") + "\n" +
+    "Highscore_3 : " + PlayerPrefs.GetInt("highscore_3") + "\n" +
+    "Highscore_4 : " + PlayerPrefs.GetInt("highscore_4") + "\n" +
+    "Highscore_5 : " + PlayerPrefs.GetInt("highscore_5") + "\n" +
+    "Highscore_6 : " + PlayerPrefs.GetInt("highscore_6") + "\n" +
+    "Highscore_7 : " + PlayerPrefs.GetInt("highscore_7") + "\n" +
+    "Highscore_8 : " + PlayerPrefs.GetInt("highscore_8") + "\n" +
+    "Highscore_9 : " + PlayerPrefs.GetInt("highscore_9") + "\n");
         }
     }
 
@@ -158,8 +174,8 @@ public class GameManager : MonoBehaviour
     private void GameOver(string msg)
     {
         bow.gameObject.SetActive(false);
-        ui.Message = msg + "\n Your Score: " + GetScore();
-        ui.ShowMessage();
+        msg = msg + "\n Your Score: " + GetScore();
+        StartCoroutine(ui.DisplayMessage(msg, 3));
         gameOver = true;
         //GetScore();
     }
@@ -167,8 +183,8 @@ public class GameManager : MonoBehaviour
     private void Win(string msg)
     {
         bow.gameObject.SetActive(false);
-        ui.Message = msg + "\n Your Score: " + GetScore();
-        ui.ShowMessage();
+        msg = msg + "\n Your Score: " + GetScore();
+        StartCoroutine(ui.DisplayMessage(msg, 3));
         gameOver = true;
         //GetScore();
     }
@@ -257,6 +273,33 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetInt("highscore_7", highscore[7]);
         PlayerPrefs.SetInt("highscore_8", highscore[8]);
         PlayerPrefs.SetInt("highscore_9", highscore[9]);
+
+        Text first = HighscoreBoard.transform.GetChild(1).GetComponent<Text>();
+        Text second = HighscoreBoard.transform.GetChild(2).GetComponent<Text>();
+        Text third = HighscoreBoard.transform.GetChild(3).GetComponent<Text>();
+        Text fourth = HighscoreBoard.transform.GetChild(4).GetComponent<Text>();
+        Text fifth = HighscoreBoard.transform.GetChild(5).GetComponent<Text>();
+        Text sixth = HighscoreBoard.transform.GetChild(6).GetComponent<Text>();
+        Text seventh = HighscoreBoard.transform.GetChild(7).GetComponent<Text>();
+        Text eighth = HighscoreBoard.transform.GetChild(8).GetComponent<Text>();
+        Text ninth = HighscoreBoard.transform.GetChild(9).GetComponent<Text>();
+        Text tenth = HighscoreBoard.transform.GetChild(10).GetComponent<Text>();
+
+        first.text = "First : " + highscore[0];
+        second.text = "Second : " + highscore[1];
+        third.text = "Third : " + highscore[2];
+        fourth.text = "4th Place : " + highscore[3];
+        fifth.text = "5th Place : " + highscore[4];
+        sixth.text = "6th Place : " + highscore[5];
+        seventh.text = "7th Place : " + highscore[6];
+        eighth.text = "8th Place : " + highscore[7];
+        ninth.text = "9th Place : " + highscore[8];
+        tenth.text = "10th Place : " + highscore[9];
+
+        Text colour = HighscoreBoard.transform.GetChild(highscoreCounter).GetComponent<Text>();
+        colour.color = new Color(255, 0, 0);
+
+        HighscoreBoard.SetActive(true);
 
     }
 

@@ -52,6 +52,7 @@ public class UI : MonoBehaviour {
     }
 
     public IEnumerator DisplayMessage(string msg, float duration) {
+        Debug.Log("Here");
         Message = msg;
         ShowMessage();
         yield return new WaitForSeconds(duration);
@@ -60,6 +61,7 @@ public class UI : MonoBehaviour {
 
     public void ShowMessage() {
         anim.Play("MessageBlendIn", 0, 0f);
+
     }
 
     public void HideMessage() {
