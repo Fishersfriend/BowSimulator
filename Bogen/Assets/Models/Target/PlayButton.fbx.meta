@@ -1,47 +1,15 @@
 fileFormatVersion: 2
-guid: 3a1a615a010d2d44e869471a67d07544
-timeCreated: 1494255807
+guid: 1ba369579410cca4eb72b81069a7a63b
+timeCreated: 1494317995
 licenseType: Free
 ModelImporter:
   serializedVersion: 19
   fileIDToRecycleName:
-    100000: Stuetze_1
-    100002: Stuetze_2
-    100004: Stuetze_3
-    100006: Stuetze_4
-    100008: Stuetze_5
-    100010: Stuetze_6
-    100012: //RootNode
-    100014: Zielscheibe 1
-    400000: Stuetze_1
-    400002: Stuetze_2
-    400004: Stuetze_3
-    400006: Stuetze_4
-    400008: Stuetze_5
-    400010: Stuetze_6
-    400012: //RootNode
-    400014: Zielscheibe 1
-    2300000: Stuetze_1
-    2300002: Stuetze_2
-    2300004: Stuetze_3
-    2300006: Stuetze_4
-    2300008: Stuetze_5
-    2300010: Stuetze_6
-    2300012: Zielscheibe 1
-    3300000: Stuetze_1
-    3300002: Stuetze_2
-    3300004: Stuetze_3
-    3300006: Stuetze_4
-    3300008: Stuetze_5
-    3300010: Stuetze_6
-    3300012: Zielscheibe 1
-    4300000: Zielscheibe
-    4300002: Stuetze_1
-    4300004: Stuetze_2
-    4300006: Stuetze_3
-    4300008: Stuetze_4
-    4300010: Stuetze_5
-    4300012: Stuetze_6
+    100000: //RootNode
+    400000: //RootNode
+    2300000: //RootNode
+    3300000: //RootNode
+    4300000: pCube1
   materials:
     importMaterials: 1
     materialName: 0
@@ -68,7 +36,7 @@ ModelImporter:
     isReadable: 1
   meshes:
     lODScreenPercentages: []
-    globalScale: 10
+    globalScale: 50
     meshCompression: 0
     addColliders: 0
     importBlendShapes: 1

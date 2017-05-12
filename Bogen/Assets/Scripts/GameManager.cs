@@ -86,8 +86,8 @@ public class GameManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.R))
         {
-            GameOver("You're dead. :[");
-            //ReloudScene();
+            //GameOver("You're dead. :[");
+            ReloudScene();
         }
 
         if (Input.GetKeyDown(KeyCode.H))

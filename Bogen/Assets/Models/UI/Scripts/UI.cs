@@ -22,7 +22,7 @@ public class UI : MonoBehaviour {
     public int Health {
         get { return health; }
         set {
-            if (health != value) anim.Play("BloodScreen", 0, 0f);
+            if (health > value) anim.Play("BloodScreen", 0, 0f);
             health = value;
 
             if (hearts != null) {
@@ -41,7 +41,7 @@ public class UI : MonoBehaviour {
 
     private void CreateHearts() {
         hearts = new RectTransform[health];
-        float size = 100f;
+        float size = 0.05f;
         for (int i = 0; i < health; i++) {
             hearts[i] = Instantiate<RectTransform>(heartPrefab, transform);
             hearts[i].localScale = Vector3.one;

@@ -75,6 +75,9 @@ public class TelnetSocket : MonoBehaviour
             Bow.GetComponent<RotateWithCamera>().enabled = true;
 
         }
+
+        StartCoroutine(WaitforFlush(0.2f));
+
     }
 
     // Update is called once per frame
@@ -256,8 +259,10 @@ public class TelnetSocket : MonoBehaviour
         powerInt = int.Parse(Power.Substring(4));
 
 
-        if (powerInt >= 100)
-        {
+        //if (powerInt >= 100)
+
+        if (true)
+            {
             longbow.Shoot(powerInt);
             pullCorrect = false;
             pull = 0;
@@ -273,15 +278,14 @@ public class TelnetSocket : MonoBehaviour
                 theWriter.WriteLine("shotRed: " + powerInt + "/n");
                 theWriter.Flush();
                 Debug.Log("RedShot");
-                StartCoroutine(Wait(0.01f));
-                theWriter.WriteLine("clear /n");
-                theWriter.Flush();
+
             }
             else if (y == 2)
             {
                 theWriter.WriteLine("shotBlue: " + powerInt + "/n");
                 theWriter.Flush();
                 Debug.Log("BlueShot");
+
 
             }
             else if (y == 3)
@@ -290,13 +294,14 @@ public class TelnetSocket : MonoBehaviour
                 theWriter.Flush();
                 Debug.Log("GreenShot");
 
+
             }
             else
             {
                 Debug.Log("ErrorColor");
             }
-            StartCoroutine(WaitforFlush(0.75f));
 
+            StartCoroutine(WaitforFlush(1f));
         }
     }
 
