@@ -46,6 +46,7 @@ public class TelnetSocket : MonoBehaviour
         {
             StartCoroutine(activateBow());
             longbow.GetComponent<BowDebugController>().enabled = false;
+            StartCoroutine(WaitforFlush(0.2f));
         }
         else
         {
@@ -76,7 +77,6 @@ public class TelnetSocket : MonoBehaviour
 
         }
 
-        StartCoroutine(WaitforFlush(0.2f));
 
     }
 
@@ -301,7 +301,7 @@ public class TelnetSocket : MonoBehaviour
                 Debug.Log("ErrorColor");
             }
 
-            StartCoroutine(WaitforFlush(1f));
+            StartCoroutine(WaitforFlush(0.75f));
         }
     }
 
